@@ -1,14 +1,15 @@
-<script lang="ts">
+<script setup lang="ts">
 import MainHeader from "@/components/Header.vue";
 import Auth from "@/components/Auth.vue";
 
-export default {
-  name: "App",
-  components: {
-    MainHeader,
-    Auth,
-  },
-};
+/* using Options API */
+// export default {
+//   name: "App",
+//   components: {
+//     MainHeader,
+//     Auth,
+//   },
+// };
 </script>
 
 <template>

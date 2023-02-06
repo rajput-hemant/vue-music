@@ -1,33 +1,38 @@
-<script lang="ts">
-import { mapStores, mapWritableState } from "pinia";
-
+<script setup lang="ts">
 import useModalStore from "@/stores/modal";
 
-export default {
-  name: "AppHeader",
-  data() {
-    return {
-      //
-    };
-  },
-  computed: {
-    ...mapStores(useModalStore),
-    ...mapWritableState(useModalStore, ["isOpen"]),
-  },
-  methods: {
-    toggleAuthModal() {
-      /**
-       * In this case, we are using the mapWritableState helper
-       * to map the isOpen state to the component's data.
-       *
-       * This is a shorthand for the following:
-       * this.modalStore.isOpen = !this.modalStore.isOpen;
-       */
-      this.isOpen = !this.isOpen;
-      // this.modalStore.isOpen = !this.modalStore.isOpen;
-    },
-  },
+const store = useModalStore();
+
+const toggleAuthModal = () => {
+  store.isOpen = !store.isOpen;
 };
+
+/* using Options API */
+// export default {
+//   name: "AppHeader",
+//   data() {
+//     return {
+//       //
+//     };
+//   },
+//   computed: {
+//     ...mapStores(useModalStore),
+//     ...mapWritableState(useModalStore, ["isOpen"]),
+//   },
+//   methods: {
+//     toggleAuthModal() {
+//       /**
+//        * In this case, we are using the mapWritableState helper
+//        * to map the isOpen state to the component's data.
+//        *
+//        * This is a shorthand for the following:
+//        * this.modalStore.isOpen = !this.modalStore.isOpen;
+//        */
+//       this.isOpen = !this.isOpen;
+//       // this.modalStore.isOpen = !this.modalStore.isOpen;
+//     },
+//   },
+// };
 </script>
 
 <template>

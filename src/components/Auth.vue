@@ -1,23 +1,48 @@
-<script lang="ts">
-import { mapState, mapWritableState } from "pinia";
-
+<script setup lang="ts">
 import useModalStore from "@/stores/modal";
+import { ref, toRefs } from "vue";
 
-export default {
-  name: "Auth",
-  data() {
-    return {
-      tab: "login",
-    };
-  },
-  computed: {
-    ...mapState(useModalStore, ["hiddenClass"]),
-    ...mapWritableState(useModalStore, ["isOpen"]),
-  },
-  methods: {
-    //
-  },
+const inputClasses =
+  "block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded";
+
+const store = useModalStore();
+const { isOpen, hiddenClass } = toRefs(store);
+const tab = ref("login");
+
+const schema = {
+  name: "required|min:3|max:100|alpha_spaces",
+  email: "required|min:3|max:100|email",
+  age: "required|min_value:18|max_value:100",
+  password: "required|min:9|max:100/exclude:password",
+  confirm_password: "password_mismatch:@password",
+  country: "required|country_excluded:Antarctica",
+  tos: "tos",
 };
+
+const userData = {
+  country: "India",
+};
+
+const register = (values: Event) => {
+  console.log(values);
+};
+
+/* using Options API */
+// export default {
+//   name: "Auth",
+//   data() {
+//     return {
+//       tab: "login",
+//     };
+//   },
+//   computed: {
+//     ...mapState(useModalStore, ["hiddenClass"]),
+//     ...mapWritableState(useModalStore, ["isOpen"]),
+//   },
+//   methods: {
+//     //
+//   },
+// };
 </script>
 
 <template>
@@ -90,7 +115,7 @@ export default {
               <label class="inline-block mb-2">Email</label>
               <input
                 type="email"
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+                :class="inputClasses"
                 placeholder="Enter Email"
               />
             </div>
@@ -99,7 +124,7 @@ export default {
               <label class="inline-block mb-2">Password</label>
               <input
                 type="password"
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+                :class="inputClasses"
                 placeholder="Password"
               />
             </div>
@@ -110,70 +135,96 @@ export default {
               Submit
             </button>
           </form>
+
           <!-- Registration Form -->
-          <form v-show="tab === 'register'">
+          <vee-form
+            v-show="tab === 'register'"
+            :validation-schema="schema"
+            @submit="register"
+            :initial-values="userData"
+          >
             <!-- Name -->
             <div class="mb-3">
               <label class="inline-block mb-2">Name</label>
-              <input
+              <vee-field
+                name="name"
                 type="text"
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+                :class="inputClasses"
                 placeholder="Enter Name"
               />
+              <error-message class="text-red-600" name="name" />
             </div>
             <!-- Email -->
             <div class="mb-3">
               <label class="inline-block mb-2">Email</label>
-              <input
+              <vee-field
+                name="email"
                 type="email"
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+                :class="inputClasses"
                 placeholder="Enter Email"
               />
+              <error-message class="text-red-600" name="email" />
             </div>
             <!-- Age -->
             <div class="mb-3">
               <label class="inline-block mb-2">Age</label>
-              <input
-                type="number"
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-              />
+              <vee-field name="age" type="number" :class="inputClasses" />
+              <error-message class="text-red-600" name="age" />
             </div>
             <!-- Password -->
             <div class="mb-3">
               <label class="inline-block mb-2">Password</label>
-              <input
-                type="password"
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-                placeholder="Password"
-              />
+              <!-- setting :bails="false" won't stop validation on first error -->
+              <vee-field
+                name="password"
+                :bails="false"
+                v-slot="{ field, errors }"
+              >
+                <input
+                  type="password"
+                  :class="inputClasses"
+                  placeholder="Password"
+                  v-bind="field"
+                />
+                <div class="text-red-600" v-for="error in errors" :key="error">
+                  {{ error }}
+                </div></vee-field
+              >
+              <!-- <error-message class="text-red-600" name="password" /> -->
             </div>
             <!-- Confirm Password -->
             <div class="mb-3">
               <label class="inline-block mb-2">Confirm Password</label>
-              <input
+              <vee-field
+                name="confirm_password"
                 type="password"
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+                :class="inputClasses"
                 placeholder="Confirm Password"
               />
+              <error-message class="text-red-600" name="confirm_password" />
             </div>
             <!-- Country -->
             <div class="mb-3">
               <label class="inline-block mb-2">Country</label>
-              <select
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-              >
+              <vee-field as="select" name="country" :class="inputClasses">
+                <option value="India">India</option>
                 <option value="USA">USA</option>
                 <option value="Mexico">Mexico</option>
                 <option value="Germany">Germany</option>
-              </select>
+                <option value="Antarctica">Antarctica</option>
+              </vee-field>
+              <error-message class="text-red-600" name="country" />
             </div>
             <!-- TOS -->
             <div class="mb-3 pl-6">
-              <input
+              <label class="inline-block">Accept terms of service</label>
+              <vee-field
+                name="tos"
+                value="1"
                 type="checkbox"
                 class="w-4 h-4 float-left -ml-6 mt-1 rounded"
               />
-              <label class="inline-block">Accept terms of service</label>
+              <error-message class="block text-red-600" name="tos" />
             </div>
             <button
               type="submit"
@@ -181,7 +232,7 @@ export default {
             >
               Submit
             </button>
-          </form>
+          </vee-form>
         </div>
       </div>
     </div>
