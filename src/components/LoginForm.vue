@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+import useUserStore from "@/stores/user";
+
+const { authenticate } = useUserStore();
+
 const logInSubmission = ref(false),
   logShowAlert = ref(false),
   logAlertVariant = ref("bg-blue-500"),
@@ -13,15 +17,24 @@ const loginSchema = {
   email: "required|min:3|max:100|email",
   password: "required|min:9|max:100|exclude:password",
 };
-const login = (e: Event) => {
+const login = async (userData: typeof loginSchema) => {
   logShowAlert.value = true;
   logInSubmission.value = true;
   logAlertVariant.value = "bg-blue-500";
-  logAlertMsg.value = "Please Wait! Your account is being created.";
+  logAlertMsg.value = "Please Wait! You are being logged in.";
+
+  try {
+    await authenticate(userData);
+  } catch (error: any) {
+    logAlertVariant.value = "bg-red-500";
+    logInSubmission.value = false;
+    logAlertMsg.value = error.message;
+    return;
+  }
 
   logAlertVariant.value = "bg-green-500";
   logAlertMsg.value = "You are now logged in!";
-  console.log(e);
+  window.location.reload();
 };
 </script>
 

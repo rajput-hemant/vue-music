@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import useModalStore from "@/stores/modal";
+import useUserStore from "@/stores/user";
 
-const store = useModalStore();
+const modalStore = useModalStore();
+const userStore = useUserStore();
 
 const toggleAuthModal = () => {
-  store.isOpen = !store.isOpen;
+  modalStore.isOpen = !modalStore.isOpen;
 };
 
 /* using Options API */
@@ -47,14 +49,21 @@ const toggleAuthModal = () => {
         <!-- Primary Navigation -->
         <ul class="flex flex-row mt-1">
           <!-- Navigation Links -->
-          <li>
+          <li v-if="!userStore.userLoggedIn">
             <a class="px-2 text-white" href="#" @click="toggleAuthModal"
               >Login / Register</a
             >
           </li>
-          <li>
-            <a class="px-2 text-white" href="#">Manage</a>
-          </li>
+          <template v-else>
+            <li>
+              <a class="px-2 text-white" href="#">Manage</a>
+            </li>
+            <li>
+              <a class="px-2 text-white" href="#" @click="userStore.signOut"
+                >Logout</a
+              >
+            </li>
+          </template>
         </ul>
       </div>
     </nav>

@@ -41,6 +41,7 @@ const register = async (userData: typeof schema) => {
 
   regAlertVariant.value = "bg-green-500";
   regAlertMsg.value = "Account Created Successfully!";
+  window.location.reload();
 };
 
 const inputClasses =
