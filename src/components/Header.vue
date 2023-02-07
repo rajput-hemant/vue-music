@@ -1,12 +1,25 @@
 <script setup lang="ts">
+import { useRoute, useRouter } from "vue-router";
+
 import useModalStore from "@/stores/modal";
 import useUserStore from "@/stores/user";
+
+const route = useRoute();
+const router = useRouter();
 
 const modalStore = useModalStore();
 const userStore = useUserStore();
 
 const toggleAuthModal = () => {
   modalStore.isOpen = !modalStore.isOpen;
+};
+
+const signOut = () => {
+  userStore.signOut();
+
+  if (route.name === "manage") {
+    router.push({ name: "home" });
+  }
 };
 
 /* using Options API */
@@ -41,27 +54,33 @@ const toggleAuthModal = () => {
   <header id="header" class="bg-gray-700">
     <nav class="container mx-auto flex justify-start items-center py-5 px-4">
       <!-- App Name -->
-      <a class="text-white font-bold uppercase text-2xl mr-4" href="#"
-        >Vue Music</a
+      <router-link
+        class="text-white font-bold uppercase text-2xl mr-4"
+        to="/"
+        exact-active-class="no-active"
+        >Vue Music</router-link
       >
 
       <div class="flex flex-grow items-center">
         <!-- Primary Navigation -->
         <ul class="flex flex-row mt-1">
           <!-- Navigation Links -->
+          <li>
+            <router-link to="/about" class="px-2 text-white">About</router-link>
+          </li>
           <li v-if="!userStore.userLoggedIn">
-            <a class="px-2 text-white" href="#" @click="toggleAuthModal"
+            <a class="px-2 text-white" href="#" @click.prevent="toggleAuthModal"
               >Login / Register</a
             >
           </li>
           <template v-else>
             <li>
-              <a class="px-2 text-white" href="#">Manage</a>
+              <router-link class="px-2 text-white" to="/manage"
+                >Manage</router-link
+              >
             </li>
             <li>
-              <a class="px-2 text-white" href="#" @click="userStore.signOut"
-                >Logout</a
-              >
+              <a class="px-2 text-white" href="#" @click="signOut">Logout</a>
             </li>
           </template>
         </ul>
