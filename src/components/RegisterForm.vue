@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+import useUserStore from "@/stores/user";
+
+const { register: registerUser } = useUserStore();
+
 const regInSubmission = ref(false),
   regShowAlert = ref(false),
   regAlertVariant = ref("bg-blue-500"),
@@ -20,15 +24,23 @@ const userData = {
   country: "India",
 };
 
-const register = async (e: Event) => {
+const register = async (userData: typeof schema) => {
   regShowAlert.value = true;
   regInSubmission.value = true;
   regAlertVariant.value = "bg-blue-500";
   regAlertMsg.value = "Please Wait! Your account is being created.";
 
+  try {
+    await registerUser(userData);
+  } catch (error: any) {
+    regAlertVariant.value = "bg-red-500";
+    regInSubmission.value = false;
+    regAlertMsg.value = error.message;
+    return;
+  }
+
   regAlertVariant.value = "bg-green-500";
   regAlertMsg.value = "Account Created Successfully!";
-  console.log(e);
 };
 
 const inputClasses =
