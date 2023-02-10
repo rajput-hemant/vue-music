@@ -1,5 +1,16 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import { onBeforeRouteLeave } from "vue-router";
+
 import Upload from "@/components/Upload.vue";
+
+const uploadRef = ref<InstanceType<typeof Upload> | null>(null);
+
+onBeforeRouteLeave((to, from, next) => {
+  uploadRef.value?.cancelUploads();
+
+  next();
+});
 </script>
 
 <template>
@@ -7,7 +18,7 @@ import Upload from "@/components/Upload.vue";
   <section class="container mx-auto mt-6">
     <div class="md:grid md:grid-cols-3 md:gap-4">
       <div class="col-span-1">
-        <upload />
+        <upload ref="uploadRef" />
       </div>
       <div class="col-span-2">
         <div

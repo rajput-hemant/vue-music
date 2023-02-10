@@ -21,5 +21,6 @@ export const db = app.firestore();
 export const storage = app.storage();
 
 export const usersCollection = db.collection("users");
+export const songsCollection = db.collection("songs");
 
 export default app;
