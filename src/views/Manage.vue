@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
+import type firebase from "firebase/app";
 
 import { auth, songsCollection } from "@/includes/firebase";
 import CompositionItem from "@/components/CompositionItem.vue";
@@ -8,31 +9,54 @@ import Upload from "@/components/Upload.vue";
 
 const uploadRef = ref<InstanceType<typeof Upload> | null>(null);
 const songs = ref<any>([]);
+const unsavedFlag = ref(false);
 
 onBeforeMount(async () => {
   const snapshot = await songsCollection
     .where("uid", "==", auth.currentUser!.uid)
     .get();
 
-  snapshot.forEach((document) => {
-    const song = {
-      ...document.data(),
-      docId: document.id,
-    };
-
-    songs.value.push(song);
-  });
+  snapshot.forEach(addSong);
 });
+
+const addSong = (
+  document: firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>
+) => {
+  const song = {
+    ...document.data(),
+    docId: document.id,
+  };
+
+  songs.value.push(song);
+};
 
 const updateSongs = (i: number, values: any) => {
   songs.value[i].modified_name = values.modified_name;
   songs.value[i].genre = values.genre;
 };
 
-onBeforeRouteLeave((to, from, next) => {
-  uploadRef.value?.cancelUploads();
+const removeSong = (i: number) => {
+  songs.value.splice(i, 1);
+};
 
-  next();
+const updateUnsavedFlag = (value: boolean) => {
+  unsavedFlag.value = value;
+};
+
+onBeforeRouteLeave((to, from, next) => {
+  // uploadRef.value?.cancelUploads();
+
+  if (!unsavedFlag.value) {
+    next();
+  } else {
+    const leave = confirm(
+      "You have unsaved changes. Are you sure you want to leave?"
+    );
+
+    next(leave);
+  }
+
+  // next();
 });
 </script>
 
@@ -41,7 +65,7 @@ onBeforeRouteLeave((to, from, next) => {
   <section class="container mx-auto mt-6">
     <div class="md:grid md:grid-cols-3 md:gap-4">
       <div class="col-span-1">
-        <upload ref="uploadRef" />
+        <upload ref="uploadRef" :addSong="addSong" />
       </div>
       <div class="col-span-2">
         <div
@@ -61,6 +85,8 @@ onBeforeRouteLeave((to, from, next) => {
               :song="song"
               :index="i"
               :updateSong="updateSongs"
+              :removeSong="removeSong"
+              :updateUnsavedFlag="updateUnsavedFlag"
             />
           </div>
         </div>

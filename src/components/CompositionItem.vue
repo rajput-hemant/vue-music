@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import { songsCollection } from "@/includes/firebase";
+import { songsCollection, storage } from "@/includes/firebase";
 
 const props = defineProps<{
   song: {
     docId: string;
+    original_name: string;
     modified_name: string;
     genre: string;
   };
+  index: number;
   updateSong: (
     i: number,
     values: {
@@ -16,7 +18,8 @@ const props = defineProps<{
       genre: string;
     }
   ) => void;
-  index: number;
+  removeSong: (i: number) => void;
+  updateUnsavedFlag?: (value: boolean) => void;
 }>();
 
 // const props = defineProps({
@@ -60,19 +63,40 @@ const edit = async (values: typeof props.song) => {
     return;
   }
 
+  // call updateSong fn to update the UI
+  props.updateSong(props.index, values);
+
+  // call updateUnsavedFlag fn to update the unsaved flag
+  props.updateUnsavedFlag?.(false);
+
   alertVariant.value = "bg-green-500";
   alertMessage.value = "Song info updated successfully!";
   showForm.value = false;
+};
+
+const deleteSong = async () => {
+  const storageRef = storage.ref();
+  const songRef = storageRef.child(`songs/${props.song.original_name}`);
+
+  // delete song from firebase storage
+  await songRef.delete();
+
+  // delete song from firestore bd
+  await songsCollection.doc(props.song.docId).delete();
+
+  // call removeSong fn to delete the song & update the UI
+  props.removeSong(props.index);
 };
 </script>
 
 <template>
   <div class="border border-gray-200 p-3 mb-4 rounded">
     <div v-show="!showForm">
-      <h4 class="inline-block text-2xl font-bold">
+      <h4 class="inline-block text-lg font-bold">
         {{ props.song.modified_name }}
       </h4>
       <button
+        @click.prevent="deleteSong"
         class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right"
       >
         <i class="fa fa-times"></i>
@@ -105,6 +129,7 @@ const edit = async (values: typeof props.song) => {
             type="text"
             class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
             placeholder="Enter Song Title"
+            @input="props.updateUnsavedFlag?.(true)"
           />
           <error-message class="text-red-600" name="modified_name" />
         </div>
@@ -115,6 +140,7 @@ const edit = async (values: typeof props.song) => {
             type="text"
             class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
             placeholder="Enter Genre"
+            @input="props.updateUnsavedFlag?.(true)"
           />
           <error-message class="text-red-600" name="genre" />
         </div>

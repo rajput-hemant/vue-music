@@ -1,18 +1,25 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onBeforeUnmount } from "vue";
+import type firebase from "firebase/app";
 
 import { storage, auth, songsCollection } from "@/includes/firebase";
+
+const props = defineProps<{
+  addSong: (
+    document: firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>
+  ) => void;
+}>();
 
 const isDragOver = ref(false);
 const uploads: any = ref([]);
 
 /* cancel upload on navigating away from page */
 // using onBeforeUnmount hook
-// onBeforeUnmount(async () => {
-//   uploads.value.forEach((upload: any) => {
-//     upload.task.cancel();
-//   });
-// });
+onBeforeUnmount(async () => {
+  uploads.value.forEach((upload: any) => {
+    upload.task.cancel();
+  });
+});
 
 // using ref to access component instance
 const cancelUploads = () => {
@@ -56,8 +63,6 @@ const upload = ($event: DragEvent | Event) => {
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
 
-        console.log("Upload is " + progress + "% done");
-
         uploads.value[uploadIndex].current_progress = progress;
       },
       // Error
@@ -80,7 +85,10 @@ const upload = ($event: DragEvent | Event) => {
         };
 
         song.url = await task.snapshot.ref.getDownloadURL();
-        await songsCollection.add(song);
+        const songRef = await songsCollection.add(song);
+        const songSnapshot = await songRef.get();
+
+        props.addSong(songSnapshot);
 
         uploads.value[uploadIndex].variant = "bg-green-400";
         uploads.value[uploadIndex].icon = "fas fa-check";
