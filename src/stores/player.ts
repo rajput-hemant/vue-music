@@ -57,6 +57,21 @@ export default defineStore({
         requestAnimationFrame(this.progress);
       }
     },
+
+    updateSeek(event: Event) {
+      if (!this.sound.playing) return;
+
+      const { x, width } = (
+        event.currentTarget as Element
+      ).getBoundingClientRect();
+
+      const clickX = (event as MouseEvent).clientX - x;
+      const percentage = clickX / width;
+      const seconds = this.sound.duration() * percentage;
+
+      this.sound.seek(seconds);
+      this.sound.once("seek", this.progress);
+    },
   },
 
   getters: {

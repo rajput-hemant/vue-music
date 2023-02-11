@@ -25,7 +25,13 @@ if (firebaseAuth.currentUser) {
   <!-- Header -->
   <main-header />
 
-  <router-view />
+  <router-view v-slot="{ Component }">
+    <!-- transition won't work if components have multiple root elements -->
+    <transition name="fade" mode="out-in">
+      <!-- this is a ghost component, the component we pass in `is` property will be rendered in this ghost component  -->
+      <component :is="Component" />
+    </transition>
+  </router-view>
 
   <!-- Player -->
   <player />
@@ -33,3 +39,18 @@ if (firebaseAuth.currentUser) {
   <!-- Auth Modal -->
   <auth />
 </template>
+
+<style>
+.fade-enter-from {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  transition: all 0.5s linear;
+}
+
+.fade-leave-to {
+  transition: all 0.5s linear;
+  opacity: 0;
+}
+</style>
