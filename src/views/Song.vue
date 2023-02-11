@@ -1,28 +1,41 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, computed } from "vue";
+import { ref, onBeforeMount, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import type { FormContext } from "vee-validate";
 
 import { songsCollection, auth, commentsCollection } from "@/includes/firebase";
 import useUserStore from "@/stores/user";
+import usePlayerStore from "@/stores/player";
 import type { Song, Comment } from "@/@types";
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
+const playerStore = usePlayerStore();
 
 const song = ref<Song>(null!);
 const comments = ref<Comment[]>([]);
-const sortOrder = ref("desc");
+const sortOrder = ref("latest");
+
 const sortedComments = computed(() => {
   return [...comments.value].sort((a, b) => {
-    if (sortOrder.value === "desc") {
+    if (sortOrder.value === "latest") {
       return (
         new Date(b.datePosted).getTime() - new Date(a.datePosted).getTime()
       );
     }
 
     return new Date(a.datePosted).getTime() - new Date(b.datePosted).getTime();
+  });
+});
+
+watch(sortOrder, (value: string) => {
+  if (route.query.sort === value) {
+    return;
+  }
+
+  router.push({
+    query: { sort: value },
   });
 });
 
@@ -33,6 +46,9 @@ onBeforeMount(async () => {
   if (!snapshot.exists) {
     router.push({ name: "home" });
   }
+
+  const { sort } = route.query;
+  sortOrder.value = sort === "latest" || sort === "oldest" ? sort : "latest";
 
   song.value = snapshot.data() as Song;
 
@@ -66,6 +82,12 @@ const addComment = async (
   };
 
   await commentsCollection.add(comment);
+
+  // update song comment count
+  song.value.comment_count += 1;
+  await songsCollection.doc(route.params.id as string).update({
+    comment_count: song.value.comment_count,
+  });
 
   // get latest comments
   await getComments();
@@ -107,14 +129,21 @@ const getComments = async () => {
       <!-- Play/Pause Button -->
       <button
         type="button"
+        @click.prevent="playerStore.newSong(song)"
         class="z-50 h-24 w-24 text-3xl bg-white text-black rounded-full focus:outline-none"
       >
-        <i class="fas fa-play"></i>
+        <i
+          class="fas"
+          :class="{
+            'fa-play': !playerStore.playing,
+            'fa-pause': playerStore.playing,
+          }"
+        ></i>
       </button>
       <div class="z-50 text-left ml-8">
         <!-- Song Info -->
-        <div class="text-3xl font-bold">{{ song.modified_name }}</div>
-        <div>{{ song.genre }}</div>
+        <div class="text-3xl font-bold">{{ song?.modified_name }}</div>
+        <div>{{ song?.genre }}</div>
       </div>
     </div>
   </section>
@@ -123,7 +152,7 @@ const getComments = async () => {
     <div class="bg-white rounded border border-gray-200 relative flex flex-col">
       <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
         <!-- Comment Count -->
-        <span class="card-title">Comments (15)</span>
+        <span class="card-title">Comments ({{ song?.comment_count }})</span>
         <i class="fa fa-comments float-right text-green-400 text-2xl"></i>
       </div>
       <div class="p-6">
@@ -159,8 +188,8 @@ const getComments = async () => {
           v-model="sortOrder"
           class="block mt-4 py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
         >
-          <option value="desc">Latest</option>
-          <option value="asc">Oldest</option>
+          <option value="latest">Latest</option>
+          <option value="oldest">Oldest</option>
         </select>
       </div>
     </div>
