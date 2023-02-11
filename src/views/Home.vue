@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import type firebase from "firebase/app";
-import type Song from "@/@types/song";
-
 import { ref, onBeforeMount, onBeforeUnmount } from "vue";
+import type firebase from "firebase/app";
 
 import { songsCollection } from "@/includes/firebase";
 import SongItem from "@/components/SongItem.vue";
+import type { Song } from "@/@types";
 
 const songs = ref<Song[]>([]);
 const pendingRequest = ref(false);

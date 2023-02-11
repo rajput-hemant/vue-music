@@ -6,7 +6,7 @@ import type firebase from "firebase/app";
 import { auth, songsCollection } from "@/includes/firebase";
 import CompositionItem from "@/components/CompositionItem.vue";
 import Upload from "@/components/Upload.vue";
-import type Song from "@/@types/song";
+import type { Song } from "@/@types";
 
 const uploadRef = ref<InstanceType<typeof Upload> | null>(null);
 const songs = ref<Song[]>([]);

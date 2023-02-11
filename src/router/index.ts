@@ -41,6 +41,11 @@ const router = createRouter({
       redirect: { name: "manage" },
     },
     {
+      name: "song",
+      path: "/song/:id",
+      component: () => import("@/views/Song.vue"),
+    },
+    {
       path: "/:catchAll(.*)*",
       redirect: { name: "home" },
     },
