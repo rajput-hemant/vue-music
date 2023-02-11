@@ -6,9 +6,10 @@ import type firebase from "firebase/app";
 import { auth, songsCollection } from "@/includes/firebase";
 import CompositionItem from "@/components/CompositionItem.vue";
 import Upload from "@/components/Upload.vue";
+import type Song from "@/@types/song";
 
 const uploadRef = ref<InstanceType<typeof Upload> | null>(null);
-const songs = ref<any>([]);
+const songs = ref<Song[]>([]);
 const unsavedFlag = ref(false);
 
 onBeforeMount(async () => {
@@ -24,10 +25,10 @@ const addSong = (
 ) => {
   const song = {
     ...document.data(),
-    docId: document.id,
+    id: document.id,
   };
 
-  songs.value.push(song);
+  songs.value.push(song as Song);
 };
 
 const updateSongs = (i: number, values: any) => {
@@ -81,7 +82,7 @@ onBeforeRouteLeave((to, from, next) => {
             <!-- Composition Items -->
             <composition-item
               v-for="(song, i) in songs"
-              :key="song.docId"
+              :key="song.id"
               :song="song"
               :index="i"
               :updateSong="updateSongs"

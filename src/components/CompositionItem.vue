@@ -5,7 +5,7 @@ import { songsCollection, storage } from "@/includes/firebase";
 
 const props = defineProps<{
   song: {
-    docId: string;
+    id: string;
     original_name: string;
     modified_name: string;
     genre: string;
@@ -55,7 +55,7 @@ const edit = async (values: typeof props.song) => {
   alertVariant.value = "bg-blue-500";
 
   try {
-    await songsCollection.doc(props.song.docId).update(values);
+    await songsCollection.doc(props.song.id).update(values);
   } catch (error: any) {
     alertVariant.value = "bg-red-500";
     alertMessage.value = error.message;
@@ -82,7 +82,7 @@ const deleteSong = async () => {
   await songRef.delete();
 
   // delete song from firestore bd
-  await songsCollection.doc(props.song.docId).delete();
+  await songsCollection.doc(props.song.id).delete();
 
   // call removeSong fn to delete the song & update the UI
   props.removeSong(props.index);
