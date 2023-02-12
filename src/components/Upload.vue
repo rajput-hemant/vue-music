@@ -37,8 +37,21 @@ const upload = ($event: DragEvent | Event) => {
     ? [...($event as DragEvent).dataTransfer!.files]
     : // @ts-ignore
       [...$event.target!.files];
+
   files.forEach((file) => {
     if (file.type !== "audio/mpeg") {
+      return;
+    }
+
+    if (!navigator.onLine) {
+      uploads.value.push({
+        task: {},
+        current_progress: 100,
+        name: file.name,
+        variant: "bg-red-400",
+        icon: "fas fa-exclamation-triangle",
+        text_class: "text-red-400",
+      });
       return;
     }
 

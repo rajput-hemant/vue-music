@@ -5,7 +5,7 @@ import fr from "@/locales/fr.json";
 
 export default createI18n({
   legacy: false,
-  locale: "fr",
+  locale: "en",
   fallbackLocale: "en",
   messages: {
     en,

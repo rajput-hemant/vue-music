@@ -1,6 +1,11 @@
 {
   "extends": "@vue/tsconfig/tsconfig.web.json",
-  "include": ["src/**/*", "src/**/*.vue", "src/**/*.json"],
+  "include": [
+    "src/**/*",
+    "src/**/*.vue",
+    "src/**/*.json",
+    "node_modules/vite-plugin-pwa/client.d.ts"
+  ],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     "composite": true,

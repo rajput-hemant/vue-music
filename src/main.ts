@@ -1,5 +1,6 @@
 import { createApp, type App } from "vue";
 import { createPinia } from "pinia";
+import { registerSW } from "virtual:pwa-register";
 
 import VApp from "./App.vue";
 import router from "./router";
@@ -10,6 +11,8 @@ import Icon from "./directives/icon";
 
 import "./assets/base.css";
 import "./assets/main.css";
+
+registerSW({ immediate: true });
 
 let app: App<Element>;
 

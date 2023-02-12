@@ -20,6 +20,11 @@ export const auth = app.auth();
 export const db = app.firestore();
 export const storage = app.storage();
 
+// Enable offline data
+db.enablePersistence().catch((err) => {
+  console.log(`Firebase Persistence error ${err.code}`);
+});
+
 export const usersCollection = db.collection("users");
 export const songsCollection = db.collection("songs");
 export const commentsCollection = db.collection("comments");
