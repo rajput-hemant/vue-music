@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 import useModalStore from "@/stores/modal";
@@ -6,6 +8,7 @@ import useUserStore from "@/stores/user";
 
 const route = useRoute();
 const router = useRouter();
+const i18n = useI18n();
 
 const modalStore = useModalStore();
 const userStore = useUserStore();
@@ -21,6 +24,14 @@ const signOut = () => {
     router.push({ name: "home" });
   }
 };
+
+const changeLocale = () => {
+  i18n.locale.value = i18n.locale.value === "en" ? "fr" : "en";
+};
+
+const currentLocale = computed(() => {
+  return i18n.locale.value === "fr" ? "Fr" : "En";
+});
 
 /* using Options API */
 // export default {
@@ -83,6 +94,13 @@ const signOut = () => {
               <a class="px-2 text-white" href="#" @click="signOut">Logout</a>
             </li>
           </template>
+        </ul>
+        <ul class="ml-auto">
+          <li>
+            <a href="#" @click.prevent="changeLocale" class="px-2 text-white"
+              >{{ currentLocale }}
+            </a>
+          </li>
         </ul>
       </div>
     </nav>
