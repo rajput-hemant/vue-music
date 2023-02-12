@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, toRefs } from "vue";
+import { ref, toRefs, defineAsyncComponent } from "vue";
 
 import useModalStore from "@/stores/modal";
-import LoginForm from "./LoginForm.vue";
-import RegisterForm from "./RegisterForm.vue";
+
+const LoginForm = defineAsyncComponent(() => import("./LoginForm.vue"));
+const RegisterForm = defineAsyncComponent(() => import("./RegisterForm.vue"));
 
 const store = useModalStore();
 const { isOpen, hiddenClass } = toRefs(store);

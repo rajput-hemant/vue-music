@@ -6,13 +6,18 @@ import VApp from "./App.vue";
 import router from "./router";
 import i18n from "./includes/i18n";
 import VeeValidate from "./includes/validation";
-import { auth } from "./includes/firebase";
 import Icon from "./directives/icon";
+import GlobalComponents from "./includes/_global";
+import { auth } from "./includes/firebase";
+import progressBar from "./includes/progress-bar";
 
 import "./assets/base.css";
 import "./assets/main.css";
+import "nprogress/nprogress.css";
 
 registerSW({ immediate: true });
+
+progressBar(router);
 
 let app: App<Element>;
 
@@ -24,6 +29,7 @@ auth.onAuthStateChanged(() => {
     app.use(router);
     app.use(i18n);
     app.use(VeeValidate);
+    app.use(GlobalComponents);
     app.directive("icon", Icon);
 
     app.mount("#app");
