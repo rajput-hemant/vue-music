@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
+import { useI18n } from "vue-i18n";
 import type firebase from "firebase/app";
 
 import { auth, songsCollection } from "@/includes/firebase";
@@ -8,6 +9,7 @@ import CompositionItem from "@/components/CompositionItem.vue";
 import Upload from "@/components/Upload.vue";
 import type { Song } from "@/@types";
 
+const { t } = useI18n();
 const uploadRef = ref<InstanceType<typeof Upload> | null>(null);
 const songs = ref<Song[]>([]);
 const unsavedFlag = ref(false);
@@ -73,7 +75,7 @@ onBeforeRouteLeave((to, from, next) => {
           class="bg-white rounded border border-gray-200 relative flex flex-col"
         >
           <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
-            <span class="card-title">{{ $t("manage.my_songs") }}</span>
+            <span class="card-title">{{ t("manage.my_songs") }}</span>
             <i
               class="fa fa-compact-disc float-right text-green-400 text-2xl"
             ></i>

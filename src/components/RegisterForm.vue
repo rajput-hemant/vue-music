@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 
 import useUserStore from "@/stores/user";
 
 const { register: registerUser } = useUserStore();
+const { t } = useI18n();
 
 const regInSubmission = ref(false),
   regShowAlert = ref(false),
@@ -135,7 +137,7 @@ const inputClasses =
     <!-- TOS -->
     <div class="mb-3 pl-6">
       <i18n-t class="inline-block" keypath="register.accept" tag="label"
-        ><a href="#">{{ $t("register.tos") }}</a></i18n-t
+        ><a href="#">{{ t("register.tos") }}</a></i18n-t
       >
       <vee-field
         name="tos"

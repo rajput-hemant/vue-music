@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
+import { ref, onBeforeMount, computed, watch } from "vue";
 import type { FormContext } from "vee-validate";
 
-import { songsCollection, auth, commentsCollection } from "@/includes/firebase";
 import useUserStore from "@/stores/user";
 import usePlayerStore from "@/stores/player";
+import { songsCollection, auth, commentsCollection } from "@/includes/firebase";
 import type { Song, Comment } from "@/@types";
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const playerStore = usePlayerStore();
+const { t } = useI18n();
 
 const song = ref<Song>(null!);
 const comments = ref<Comment[]>([]);
@@ -156,11 +158,9 @@ const getComments = async () => {
       >
         <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
           <!-- Comment Count -->
-          <span class="card-title">{{
-            $tc("song.comment_count", song.comment_count, {
-              count: song.comment_count,
-            })
-          }}</span>
+          <span class="card-title">
+            {{ t("song.comment_count", song?.comment_count) }}
+          </span>
           <i class="fa fa-comments float-right text-green-400 text-2xl"></i>
         </div>
         <div class="p-6">

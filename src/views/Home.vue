@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onBeforeMount, onBeforeUnmount } from "vue";
+import { useI18n } from "vue-i18n";
 import type firebase from "firebase/app";
 
 import { songsCollection } from "@/includes/firebase";
@@ -7,6 +8,7 @@ import SongItem from "@/components/SongItem.vue";
 import vIconSecondary from "@/directives/icon-secondary";
 import type { Song } from "@/@types";
 
+const { t } = useI18n();
 const songs = ref<Song[]>([]);
 const pendingRequest = ref(false);
 const maxPerPage = 25;
@@ -87,7 +89,7 @@ onBeforeUnmount(() => {
       ></div>
       <div class="container mx-auto">
         <div class="text-white main-header-content">
-          <h1 class="font-bold text-5xl mb-5">{{ $t("home.listen") }}</h1>
+          <h1 class="font-bold text-5xl mb-5">{{ t("home.listen") }}</h1>
           <p class="w-full md:w-8/12 mx-auto">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
             et dolor mollis, congue augue non, venenatis elit. Nunc justo eros,
