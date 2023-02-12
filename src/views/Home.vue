@@ -4,6 +4,7 @@ import type firebase from "firebase/app";
 
 import { songsCollection } from "@/includes/firebase";
 import SongItem from "@/components/SongItem.vue";
+import vIconSecondary from "@/directives/icon-secondary";
 import type { Song } from "@/@types";
 
 const songs = ref<Song[]>([]);
@@ -107,12 +108,15 @@ onBeforeUnmount(() => {
       <div
         class="bg-white rounded border border-gray-200 relative flex flex-col"
       >
-        <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
+        <!-- using Global Directives, using args & modifiers -->
+        <!-- v-icon.right.yellow="'headphones-alt'" -->
+        <!-- using Local Directives, using Object Syntax -->
+        <div
+          v-icon-secondary="{ icon: 'headphones-alt', right: true }"
+          class="px-6 pt-6 pb-5 font-bold border-b border-gray-200"
+        >
           <span class="card-title">Songs</span>
           <!-- Icon -->
-          <i
-            class="fa fa-headphones-alt float-right text-green-400 text-xl"
-          ></i>
         </div>
         <!-- Playlist -->
         <ol id="playlist">
