@@ -9,8 +9,8 @@ describe("SongItem.vue", () => {
       display_name: "Song Name",
     };
 
-    const wrapper = shallowMount(SongItem, {
-      propsData: {
+    const wrapper = shallowMount(SongItem as any, {
+      props: {
         song,
       },
       global: {
