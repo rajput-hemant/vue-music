@@ -12,6 +12,7 @@ describe("SongItem.vue", () => {
     const wrapper = shallowMount(SongItem as any, {
       props: {
         song,
+        index: "1",
       },
       global: {
         components: {
@@ -33,5 +34,28 @@ describe("SongItem.vue", () => {
     // Boolean assertion,
     // avoid using Boolean assertion because they are not very descriptive
     // expect(compositionAuthor.text() == song.display_name).toBe(false);
+  });
+
+  // testing attributes
+  test("renders song.id in id attribute", () => {
+    const song = {
+      id: "abc",
+    };
+
+    const wrapper = shallowMount(SongItem as any, {
+      props: {
+        song,
+        index: "1",
+      },
+      global: {
+        components: {
+          "router-link": RouterLinkStub,
+        },
+      },
+    });
+
+    expect(wrapper.attributes().id).toBe(`song-id-${song.id}`);
+
+    expect(wrapper.classes()).toContain(`song-id-${song.id}`);
   });
 });
